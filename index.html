@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies Time</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Movies Time</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search Movies...">
+            <button class="search-btn" onclick="searchMovies()">Search</button>
+        </div>
+    </div>
+
+    <div class="anime-list" id="animeList"></div>
+
+    <div class="pagination">
+        <button class="page-btn" onclick="prevPage()">Previous</button>
+        <button class="page-btn" onclick="nextPage()">Next Page</button>
+    </div>
+
+    <div class="video-modal" id="videoModal">
+        <div class="video-content">
+            <span class="close-btn" onclick="closeVideo()">&times;</span>
+            <iframe id="moviePlayer" src="" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
