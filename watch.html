@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Movie</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="theme.css"> <!-- New UI file added -->
+</head>
+<body>
+    <div class="video-container">
+        <h2>Now Playing</h2>
+        <iframe id="moviePlayer" allowfullscreen></iframe>
+        <button class="back-btn" onclick="goBack()">⬅ Back</button>
+    </div>
+    
+    <script>
+        function loadMovie() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('id');
+            const imdbId = urlParams.get('imdb');
+
+            const servers = [
+                `https://vidsrc.to/embed/movie/${imdbId || movieId}`,
+                `https://multiembed.mov/embed/${imdbId || movieId}`,
+                `https://2embed.org/embed/${imdbId || movieId}`
+            ];
+            
+            document.getElementById('moviePlayer').src = servers[0];
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+        
+        loadMovie();
+    </script>
+</body>
+</html>
