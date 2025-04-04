@@ -72,13 +72,32 @@
             const movieId = urlParams.get('id');
             const imdbId = urlParams.get('imdb');
 
+            if (!movieId && !imdbId) {
+                document.getElementById('moviePlayer').src = ''; // Clear iframe src if no movie ID
+                return;
+            }
+
             const servers = [
                 `https://vidsrc.to/embed/movie/${imdbId || movieId}`,
                 `https://multiembed.mov/embed/${imdbId || movieId}`,
                 `https://2embed.org/embed/${imdbId || movieId}`
             ];
 
-            document.getElementById('moviePlayer').src = servers[0];
+            const iframe = document.getElementById('moviePlayer');
+            iframe.src = servers[0];
+
+            iframe.onerror = () => { // Check for iframe load errors
+                console.error('Failed to load video from', servers[0]);
+                iframe.src = servers[1]; // Try the next server
+                iframe.onerror = () => {
+                    console.error('Failed to load video from', servers[1]);
+                    iframe.src = servers[2]; // Try the last server
+                    iframe.onerror = () => {
+                        console.error('Failed to load video from', servers[2]);
+                        iframe.src = ''; // Clear iframe src if all servers fail
+                    };
+                };
+            };
         }
 
         function goBack() {
