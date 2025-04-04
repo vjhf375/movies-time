@@ -1,6 +1,6 @@
 const API_KEY = '452f3f0bb0324f9ee7bbfe7019002146';
 const BASE_URL = 'https://api.themoviedb.org/3';
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w92'; // छोटा पोस्टर आकार
 
 let currentPage = 1;
 let currentQuery = '';
@@ -15,12 +15,12 @@ async function fetchMovies(page = 1, query = '') {
         const response = await fetch(url);
         const data = await response.json();
 
-        if (data.results) {
+        if (data.results && data.results.length > 0) { // जाँचें कि परिणाम मौजूद हैं या नहीं
             const movieDetails = await fetchMoviesDetailsBulk(data.results);
             displayMovies(movieDetails);
             updatePagination(page, data.total_pages);
         } else {
-            console.error('No movies found');
+            displayNoMoviesFound(); // कोई मूवी नहीं मिलने पर संदेश प्रदर्शित करें
         }
     } catch (error) {
         console.error('Error fetching movies:', error);
@@ -55,16 +55,17 @@ function displayMovies(movies) {
             <img src="${movie.poster_path ? IMAGE_BASE_URL + movie.poster_path : 'https://via.placeholder.com/500'}" alt="${movie.title}" onclick="redirectToDetails('${movie.id}')">
             <div class="anime-details">
                 <h3>${movie.title}</h3>
-                <p><strong>⭐ Rating:</strong> ${movie.vote_average}</p>
-                <p><strong> Release Date:</strong> ${movie.release_date}</p>
-                <p><strong> Genres:</strong> ${movie.genres.map(g => g.name).join(', ')}</p>
-                <p><strong>⏳ Duration:</strong> ${movie.runtime} min</p>
-                <p><strong>️ Language:</strong> ${movie.original_language.toUpperCase()}</p>
+                <p><strong> Language:</strong> ${movie.original_language.toUpperCase()}</p>
+                 <p><strong> Genres:</strong> ${movie.genres.map(g => g.name).join(', ')}</p>
             </div>
         `;
-
         movieList.appendChild(movieItem);
     });
+}
+
+function displayNoMoviesFound() {
+    const movieList = document.getElementById('animeList');
+    movieList.innerHTML = '<p style="text-align: center;">Check Your Spelling</p>';
 }
 
 function redirectToDetails(movieId) {
@@ -116,11 +117,81 @@ function searchMovies() {
     fetchMovies(currentPage, currentQuery);
 }
 
-window.playMovie = playMovie;
-window.closeVideo = closeVideo;
-window.prevPage = prevPage;
-window.nextPage = nextPage;
-window.redirectToDetails = redirectToDetails;
-window.searchMovies = searchMovies;
+// खोज सुझाव कार्यक्षमता
+const searchInput = document.getElementById('searchInput');
+const resultsList = document.createElement('ul');
+resultsList.id = 'searchResults';
+resultsList.style.position = 'absolute';
+resultsList.style.background = '#2a2a2a';
+resultsList.style.color = 'white';
+resultsList.style.width = '400px'; // सूची को चौड़ा करें
+resultsList.style.zIndex = '10';
+resultsList.style.display = 'none';
+
+// खोज इनपुट के नीचे सुझाव सूची प्रदर्शित करने के लिए CSS
+resultsList.style.top = searchInput.offsetTop + searchInput.offsetHeight + 'px';
+resultsList.style.left = searchInput.offsetLeft + 'px';
+
+searchInput.parentElement.appendChild(resultsList);
+
+searchInput.addEventListener('input', async function() {
+    const searchTerm = searchInput.value.trim();
+    if (searchTerm) {
+        const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(searchTerm)}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.results) {
+                displaySuggestions(data.results.slice(0, 5)); // शीर्ष 5 सुझाव दिखाएँ
+            }
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+        }
+    } else {
+        resultsList.style.display = 'none';
+    }
+});
+
+function displaySuggestions(suggestions) {
+    resultsList.innerHTML = '';
+    suggestions.forEach(movie => {
+        const listItem = document.createElement('li');
+        listItem.style.display = 'flex'; // लचीला लेआउट
+        listItem.style.alignItems = 'center'; // ऊर्ध्वाधर संरेखण
+        listItem.style.padding = '10px';
+        listItem.style.cursor = 'pointer';
+
+        const poster = document.createElement('img');
+        poster.src = movie.poster_path ? IMAGE_BASE_URL + movie.poster_path : 'https://via.placeholder.com/92x138';
+        poster.alt = movie.title;
+        poster.style.marginRight = '10px';
+
+        const details = document.createElement('div');
+        details.innerHTML = `
+            <strong>${movie.title}</strong>
+            <br>
+            ${movie.release_date ? movie.release_date.substring(0, 4) : 'Unknown'}
+        `;
+
+        listItem.appendChild(poster);
+        listItem.appendChild(details);
+
+        listItem.addEventListener('click', function() {
+            searchInput.value = movie.title;
+            searchMovies();
+            resultsList.style.display = 'none';
+        });
+        resultsList.appendChild(listItem);
+    });
+    resultsList.style.display = 'block';
+}
+
+searchInput.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        searchMovies();
+        resultsList.style.display = 'none';
+    }
+});
 
 fetchMovies();
