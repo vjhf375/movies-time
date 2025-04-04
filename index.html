@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movies Time</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="theme.css">
-
     <style>
         /* Google Font */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
@@ -49,7 +47,7 @@
             justify-content: center;
             width: 100%;
             padding: 10px;
-            position: relative; /* Add relative positioning */
+            position: relative;
         }
 
         .search-box {
@@ -172,15 +170,29 @@
             }
 
             .search-box {
-                width: 90%;
+                width: 95%;
             }
 
             .anime-list {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                padding: 5px;
             }
 
             .video-content iframe {
-                height: 300px;
+                height: 250px;
+            }
+
+            .video-content{
+                width: 95%;
+            }
+
+            .search-container{
+                flex-direction: column;
+                align-items: center;
+            }
+
+            body{
+                padding: 5px;
             }
         }
     </style>
