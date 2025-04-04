@@ -5,7 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch Movie</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="theme.css"> <!-- New UI file added -->
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .video-container {
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .video-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .video-container iframe {
+                height: 250px;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .video-container iframe {
+                height: 350px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="video-container">
@@ -13,7 +65,7 @@
         <iframe id="moviePlayer" allowfullscreen></iframe>
         <button class="back-btn" onclick="goBack()">⬅ Back</button>
     </div>
-    
+
     <script>
         function loadMovie() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -25,14 +77,14 @@
                 `https://multiembed.mov/embed/${imdbId || movieId}`,
                 `https://2embed.org/embed/${imdbId || movieId}`
             ];
-            
+
             document.getElementById('moviePlayer').src = servers[0];
         }
 
         function goBack() {
             window.history.back();
         }
-        
+
         loadMovie();
     </script>
 </body>
