@@ -5,11 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Details</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="theme.css"> <!-- New UI file added -->
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .movie-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #121212;
+            color: white;
+            padding: 20px;
+        }
+
+        .movie-poster {
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .movie-details {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .watch-btn {
+            padding: 10px 20px;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .movie-trailer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .movie-trailer iframe {
+            width: 560px;
+            height: 315px;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="movie-container" id="movieDetails"></div>
-    
+
     <script>
         const API_KEY = '452f3f0bb0324f9ee7bbfe7019002146';
         const BASE_URL = 'https://api.themoviedb.org/3';
@@ -18,7 +60,7 @@
         async function fetchMovieDetails() {
             const urlParams = new URLSearchParams(window.location.search);
             const movieId = urlParams.get('id');
-            
+
             if (!movieId) {
                 document.getElementById('movieDetails').innerHTML = '<p>Movie not found.</p>';
                 return;
@@ -27,6 +69,10 @@
             try {
                 const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`);
                 const movie = await response.json();
+                const videosResponse = await fetch(`${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}`);
+                const videosData = await videosResponse.json();
+                const trailer = videosData.results.find(video => video.type === 'Trailer'); // ट्रेलर खोजें
+                movie.trailer = trailer ? `http://www.youtube.com/embed/${trailer.key}` : ''; // ट्रेलर URL सेट करें
                 displayMovieDetails(movie);
             } catch (error) {
                 console.error('Error fetching movie details:', error);
@@ -35,18 +81,25 @@
 
         function displayMovieDetails(movie) {
             document.getElementById('movieDetails').innerHTML = `
-                <div class="movie-card">
-                    <img src="${movie.poster_path ? IMAGE_BASE_URL + movie.poster_path : 'https://via.placeholder.com/500'}" alt="${movie.title}">
-                    <div class="movie-info">
-                        <h2>${movie.title}</h2>
-                        <p><strong>⭐ Rating:</strong> ${movie.vote_average}</p>
-                        <p><strong>📅 Release Date:</strong> ${movie.release_date}</p>
-                        <p><strong>🎭 Genres:</strong> ${movie.genres.map(g => g.name).join(', ')}</p>
-                        <p><strong>⏳ Duration:</strong> ${movie.runtime} min</p>
-                        <p><strong>🎤 Language:</strong> ${movie.original_language.toUpperCase()}</p>
-                        <button class="watch-btn" onclick="watchMovie('${movie.id}', '${movie.imdb_id || ''}')">🎬 Watch Now</button>
-                    </div>
+                <img class="movie-poster" src="${movie.poster_path ? IMAGE_BASE_URL + movie.poster_path : 'https://via.placeholder.com/500'}" alt="${movie.title}">
+                <div class="movie-details">
+                    <h2>${movie.title}</h2>
+                    <p><strong>⭐ Rating:</strong> ${movie.vote_average}</p>
+                    <p><strong> Release Date:</strong> ${movie.release_date}</p>
+                    <p><strong> Genres:</strong> ${movie.genres.map(g => g.name).join(', ')}</p>
+                    <p><strong>⏳ Duration:</strong> ${movie.runtime} min</p>
+                    <p><strong> Language:</strong> ${movie.original_language.toUpperCase()}</p>
+                    <p><strong>Overview:</strong> ${movie.overview}</p>
+                    <p><strong>Budget:</strong> ${movie.budget}</p>
+                    <p><strong>Revenue:</strong> ${movie.revenue}</p>
+                    <p><strong>Status:</strong> ${movie.status}</p>
+                    <p><strong>Tagline:</strong> ${movie.tagline}</p>
+                    <p><strong>Production Companies:</strong> ${movie.production_companies.map(company => company.name).join(', ')}</p>
                 </div>
+                <div class="movie-trailer">
+                    <iframe src="${movie.trailer}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+                <button class="watch-btn" onclick="watchMovie('${movie.id}', '${movie.imdb_id || ''}')"> Watch Now</button>
             `;
         }
 
