@@ -14,7 +14,7 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
@@ -23,6 +23,7 @@
             width: 90%;
             max-width: 800px;
             text-align: center;
+            margin-top: 50px;
         }
 
         .video-container h2 {
@@ -45,6 +46,16 @@
             cursor: pointer;
         }
 
+        .ads-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .ads-section iframe {
+            margin: 10px;
+            border: none;
+        }
+
         /* Responsive Styles */
         @media (max-width: 600px) {
             .video-container iframe {
@@ -64,6 +75,14 @@
         <h2>Now Playing</h2>
         <iframe id="moviePlayer" allowfullscreen></iframe>
         <button class="back-btn" onclick="goBack()">⬅ Back</button>
+    </div>
+
+    <div class="ads-section">
+        <!-- Sample Ads -->
+        <iframe src="https://dummyimage.com/300x100/ff6600/ffffff&text=Ad+1" width="300" height="100"></iframe>
+        <iframe src="https://dummyimage.com/300x100/333333/ffffff&text=Ad+2" width="300" height="100"></iframe>
+        <iframe src="https://dummyimage.com/300x100/222/fff&text=Ad+3" width="300" height="100"></iframe>
+        <iframe src="https://dummyimage.com/300x100/000/fff&text=Ad+4" width="300" height="100"></iframe>
     </div>
 
     <script>
